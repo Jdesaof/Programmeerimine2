@@ -1,0 +1,42 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36">
+  <diagram name="Õlle Pruulimine" id="XWPBuNXjVvinrWxAp5ty">
+    <mxGraphModel dx="1193" dy="611" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="0" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="GxUBVZgk3m9IH9HjFF7k-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="Õlu&lt;div&gt;&lt;br&gt;&lt;div&gt;Id : int&lt;/div&gt;&lt;div&gt;Nimi : string(100)&amp;nbsp;&lt;/div&gt;&lt;div&gt;Kirjeldus : string(255)&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="100" width="220" x="330" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="GxUBVZgk3m9IH9HjFF7k-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Partii&lt;div&gt;&lt;br&gt;&lt;div&gt;Id : int&lt;/div&gt;&lt;div&gt;ÕluId : int&lt;/div&gt;&lt;div&gt;Kuupäev : datetime&lt;/div&gt;&lt;div&gt;Kood : string(20)&amp;nbsp;&lt;/div&gt;&lt;div&gt;Kirjeldus : string(255)&lt;/div&gt;&lt;div&gt;Kokkuvõte : string(500)&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="140" width="300" x="590" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="GxUBVZgk3m9IH9HjFF7k-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="Koostisosa&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Id : int&amp;nbsp;&lt;/div&gt;&lt;div&gt;Nimetus : string(100)&lt;/div&gt;&lt;div&gt;Ühik : string(20)&lt;/div&gt;&lt;div&gt;Ühikuhind : decimal&lt;/div&gt;" vertex="1">
+          <mxGeometry height="100" width="240" x="410" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="GxUBVZgk3m9IH9HjFF7k-7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6d0de;strokeColor=#b26b80;" value="Maitsmine&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Id : int&lt;/div&gt;&lt;div&gt;PartiiId : int&lt;/div&gt;&lt;div&gt;KasutajaId : int&amp;nbsp;&lt;/div&gt;&lt;div&gt;Kuupäev : datetime&lt;/div&gt;&lt;div&gt;Hinne : decimal&amp;nbsp;&lt;/div&gt;&lt;div&gt;Selgitus : string(255)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="280" x="900" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="GxUBVZgk3m9IH9HjFF7k-9" edge="1" parent="1" source="GxUBVZgk3m9IH9HjFF7k-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;html=1;" target="GxUBVZgk3m9IH9HjFF7k-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="GxUBVZgk3m9IH9HjFF7k-10" edge="1" parent="1" source="GxUBVZgk3m9IH9HjFF7k-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="740" y="310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="GxUBVZgk3m9IH9HjFF7k-11" edge="1" parent="1" source="GxUBVZgk3m9IH9HjFF7k-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="GxUBVZgk3m9IH9HjFF7k-7">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="730" y="540" />
+              <mxPoint x="1040" y="540" />
+            </Array>
+            <mxPoint x="860" y="540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="GxUBVZgk3m9IH9HjFF7k-14" edge="1" parent="1" source="GxUBVZgk3m9IH9HjFF7k-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;html=1;" target="GxUBVZgk3m9IH9HjFF7k-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
