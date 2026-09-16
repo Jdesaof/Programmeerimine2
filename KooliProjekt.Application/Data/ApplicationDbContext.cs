@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace KooliProjekt.Application.Data
 {
@@ -13,7 +8,11 @@ namespace KooliProjekt.Application.Data
         {
         }
 
-        public DbSet<ToDoList> ToDoLists { get; set; }
-        public DbSet<ToDoItem> ToDoItems { get; set; }
+        public DbSet<Olu> Olud { get; set; }
+        public DbSet<Partii> Partiid { get; set; }
+        public DbSet<Maitsmine> Maitsmised { get; set; }
+        public DbSet<Koostisosa> Koostisosad { get; set; }
+        public DbSet<PruulimisLogi> PruulimisLogid { get; set; }
+        public DbSet<PartiiFoto> PartiiFotod { get; set; }
     }
 }
