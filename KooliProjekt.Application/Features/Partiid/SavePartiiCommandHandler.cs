@@ -2,17 +2,22 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using KooliProjekt.Application.Data;
+using KooliProjekt.Application.Data.Repositories;
 using KooliProjekt.Application.Dto;
 using KooliProjekt.Application.Infrastructure.Results;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace KooliProjekt.Application.Features.Partiid
 {
     public class SavePartiiCommandHandler : IRequestHandler<SavePartiiCommand, OperationResult<PartiiDto>>
     {
-        private readonly ApplicationDbContext _context;
-        public SavePartiiCommandHandler(ApplicationDbContext context) { _context = context; }
+        private readonly IPartiiRepository _repository;
+        private readonly IOluRepository _parentRepository;
+        public SavePartiiCommandHandler(IPartiiRepository repository, IOluRepository parentRepository)
+        {
+            _repository = repository;
+            _parentRepository = parentRepository;
+        }
 
         public async Task<OperationResult<PartiiDto>> Handle(SavePartiiCommand request, CancellationToken cancellationToken)
         {
@@ -27,10 +32,10 @@ namespace KooliProjekt.Application.Features.Partiid
             }
 
             var entity = request.Id == 0 ? new Partii() :
-                await _context.Partiid.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+                await _repository.GetAsync(request.Id, cancellationToken);
             if (entity == null) return result;
 
-            if (!await _context.Olud.AnyAsync(x => x.Id == request.OluId, cancellationToken))
+            if (!await _parentRepository.ExistsAsync(request.OluId, cancellationToken))
                 return result.AddPropertyError("OluId", "Referenced record does not exist.");
 
             entity.OluId = request.OluId;
@@ -38,8 +43,7 @@ namespace KooliProjekt.Application.Features.Partiid
             entity.Kuupaev = request.Kuupaev;
             entity.Kirjeldus = request.Kirjeldus ?? string.Empty;
             entity.Tulemus = request.Tulemus ?? string.Empty;
-            if (request.Id == 0) _context.Partiid.Add(entity);
-            await _context.SaveChangesAsync(cancellationToken);
+            await _repository.SaveAsync(entity, cancellationToken);
             result.Value = PartiiDto.FromEntity(entity);
             return result;
         }

@@ -1,11 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace KooliProjekt.Application.Data
 {
-    public class Partii
+    public class Partii : Entity
     {
-        public int Id { get; set; }
 
         public int OluId { get; set; }
         public Olu Olu { get; set; }

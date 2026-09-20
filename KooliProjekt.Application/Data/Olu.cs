@@ -2,9 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace KooliProjekt.Application.Data
 {
-    public class Olu
+    public class Olu : Entity
     {
-        public int Id { get; set; }
 
         [Required]
         [MaxLength(100)]

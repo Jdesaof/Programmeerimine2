@@ -1,10 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace KooliProjekt.Application.Data
 {
-    public class PartiiFoto
+    public class PartiiFoto : Entity
     {
-        public int Id { get; set; }
 
         public int PartiiId { get; set; }
 

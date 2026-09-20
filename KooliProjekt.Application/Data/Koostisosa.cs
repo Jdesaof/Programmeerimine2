@@ -1,11 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KooliProjekt.Application.Data
 {
-    public class Koostisosa
+    public class Koostisosa : Entity
     {
-        public int Id { get; set; }
 
         public int PartiiId { get; set; }
 

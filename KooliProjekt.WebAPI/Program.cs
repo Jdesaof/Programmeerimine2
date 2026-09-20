@@ -1,6 +1,7 @@
 using FluentValidation;
 using KooliProjekt.Application.Behaviors;
 using KooliProjekt.Application.Data;
+using KooliProjekt.Application.Data.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -23,6 +24,13 @@ namespace KooliProjekt.WebAPI
             {
                 options.UseSqlServer(connectionString);
             });
+
+            builder.Services.AddScoped<IOluRepository, OluRepository>();
+            builder.Services.AddScoped<IPartiiRepository, PartiiRepository>();
+            builder.Services.AddScoped<IKoostisosaRepository, KoostisosaRepository>();
+            builder.Services.AddScoped<IMaitsmineRepository, MaitsmineRepository>();
+            builder.Services.AddScoped<IPruulimisLogiRepository, PruulimisLogiRepository>();
+            builder.Services.AddScoped<IPartiiFotoRepository, PartiiFotoRepository>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
