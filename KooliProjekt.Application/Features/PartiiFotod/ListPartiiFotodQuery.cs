@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
 using KooliProjekt.Application.Data;
+using KooliProjekt.Application.Infrastructure.Paging;
 using KooliProjekt.Application.Infrastructure.Results;
 using MediatR;
 
 namespace KooliProjekt.Application.Features.PartiiFotod
 {
     public class ListPartiiFotodQuery
-        : IRequest<OperationResult<List<PartiiFoto>>>
+        : IRequest<OperationResult<PagedResult<PartiiFoto>>>
     {
+        public int Page { get; set; } = 1;
+        public int PageSize { get; set; } = 5;
     }
 }

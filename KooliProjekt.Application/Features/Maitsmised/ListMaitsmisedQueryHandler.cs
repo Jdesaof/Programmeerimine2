@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using KooliProjekt.Application.Data;
+using KooliProjekt.Application.Infrastructure.Paging;
 using KooliProjekt.Application.Infrastructure.Results;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -10,8 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace KooliProjekt.Application.Features.Maitsmised
 {
     public class ListMaitsmisedQueryHandler
-        : IRequestHandler<ListMaitsmisedQuery,
-            OperationResult<List<Maitsmine>>>
+        : IRequestHandler<ListMaitsmisedQuery, OperationResult<PagedResult<Maitsmine>>>
     {
         private readonly ApplicationDbContext _context;
 
@@ -20,16 +20,18 @@ namespace KooliProjekt.Application.Features.Maitsmised
             _context = context;
         }
 
-        public async Task<OperationResult<List<Maitsmine>>> Handle(
+        public async Task<OperationResult<PagedResult<Maitsmine>>> Handle(
             ListMaitsmisedQuery request,
             CancellationToken cancellationToken)
         {
-            var maitsmised = await _context.Maitsmised
+            ArgumentNullException.ThrowIfNull(request);
+
+            var result = await _context.Maitsmised
                 .AsNoTracking()
                 .OrderBy(x => x.Id)
-                .ToListAsync(cancellationToken);
+                .GetPagedAsync(request.Page, request.PageSize, cancellationToken);
 
-            return new OperationResult<List<Maitsmine>>(maitsmised);
+            return new OperationResult<PagedResult<Maitsmine>>(result);
         }
     }
 }

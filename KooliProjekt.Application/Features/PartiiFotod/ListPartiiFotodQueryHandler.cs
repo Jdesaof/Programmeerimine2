@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using KooliProjekt.Application.Data;
+using KooliProjekt.Application.Infrastructure.Paging;
 using KooliProjekt.Application.Infrastructure.Results;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -10,8 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace KooliProjekt.Application.Features.PartiiFotod
 {
     public class ListPartiiFotodQueryHandler
-        : IRequestHandler<ListPartiiFotodQuery,
-            OperationResult<List<PartiiFoto>>>
+        : IRequestHandler<ListPartiiFotodQuery, OperationResult<PagedResult<PartiiFoto>>>
     {
         private readonly ApplicationDbContext _context;
 
@@ -20,16 +20,18 @@ namespace KooliProjekt.Application.Features.PartiiFotod
             _context = context;
         }
 
-        public async Task<OperationResult<List<PartiiFoto>>> Handle(
+        public async Task<OperationResult<PagedResult<PartiiFoto>>> Handle(
             ListPartiiFotodQuery request,
             CancellationToken cancellationToken)
         {
-            var fotod = await _context.PartiiFotod
+            ArgumentNullException.ThrowIfNull(request);
+
+            var result = await _context.PartiiFotod
                 .AsNoTracking()
                 .OrderBy(x => x.Id)
-                .ToListAsync(cancellationToken);
+                .GetPagedAsync(request.Page, request.PageSize, cancellationToken);
 
-            return new OperationResult<List<PartiiFoto>>(fotod);
+            return new OperationResult<PagedResult<PartiiFoto>>(result);
         }
     }
 }

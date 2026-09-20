@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using KooliProjekt.Application.Data;
+using KooliProjekt.Application.Infrastructure.Paging;
 using KooliProjekt.Application.Infrastructure.Results;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -10,8 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace KooliProjekt.Application.Features.Koostisosad
 {
     public class ListKoostisosadQueryHandler
-        : IRequestHandler<ListKoostisosadQuery,
-            OperationResult<List<Koostisosa>>>
+        : IRequestHandler<ListKoostisosadQuery, OperationResult<PagedResult<Koostisosa>>>
     {
         private readonly ApplicationDbContext _context;
 
@@ -20,16 +20,18 @@ namespace KooliProjekt.Application.Features.Koostisosad
             _context = context;
         }
 
-        public async Task<OperationResult<List<Koostisosa>>> Handle(
+        public async Task<OperationResult<PagedResult<Koostisosa>>> Handle(
             ListKoostisosadQuery request,
             CancellationToken cancellationToken)
         {
-            var koostisosad = await _context.Koostisosad
+            ArgumentNullException.ThrowIfNull(request);
+
+            var result = await _context.Koostisosad
                 .AsNoTracking()
                 .OrderBy(x => x.Id)
-                .ToListAsync(cancellationToken);
+                .GetPagedAsync(request.Page, request.PageSize, cancellationToken);
 
-            return new OperationResult<List<Koostisosa>>(koostisosad);
+            return new OperationResult<PagedResult<Koostisosa>>(result);
         }
     }
 }

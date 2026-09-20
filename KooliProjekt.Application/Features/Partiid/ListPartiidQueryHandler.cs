@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using KooliProjekt.Application.Data;
+using KooliProjekt.Application.Infrastructure.Paging;
 using KooliProjekt.Application.Infrastructure.Results;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,8 @@ using Microsoft.EntityFrameworkCore;
 namespace KooliProjekt.Application.Features.Partiid
 {
     public class ListPartiidQueryHandler
-        : IRequestHandler<ListPartiidQuery, OperationResult<List<Partii>>>
+        : IRequestHandler<ListPartiidQuery,
+            OperationResult<PagedResult<Partii>>>
     {
         private readonly ApplicationDbContext _context;
 
@@ -19,16 +21,21 @@ namespace KooliProjekt.Application.Features.Partiid
             _context = context;
         }
 
-        public async Task<OperationResult<List<Partii>>> Handle(
+        public async Task<OperationResult<PagedResult<Partii>>> Handle(
             ListPartiidQuery request,
             CancellationToken cancellationToken)
         {
-            var partiid = await _context.Partiid
+            ArgumentNullException.ThrowIfNull(request);
+
+            var result = await _context.Partiid
                 .AsNoTracking()
                 .OrderBy(x => x.Id)
-                .ToListAsync(cancellationToken);
+                .GetPagedAsync(
+                    request.Page,
+                    request.PageSize,
+                    cancellationToken);
 
-            return new OperationResult<List<Partii>>(partiid);
+            return new OperationResult<PagedResult<Partii>>(result);
         }
     }
 }
