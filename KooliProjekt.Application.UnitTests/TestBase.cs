@@ -32,6 +32,30 @@ namespace KooliProjekt.Application.UnitTests
             return new ApplicationDbContext(options.Options);
         }
 
+        protected DeleteSaveFailingDbContext GetDeleteSaveFailingDbContext()
+        {
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            return new DeleteSaveFailingDbContext(options);
+        }
+
+        protected sealed class DeleteSaveFailingDbContext : ApplicationDbContext
+        {
+            public bool FailOnSave { get; set; }
+            public InvalidOperationException SaveFailure { get; } =
+                new InvalidOperationException("Simulated save failure.");
+
+            public DeleteSaveFailingDbContext(DbContextOptions<ApplicationDbContext> options)
+                : base(options) { }
+
+            public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+            {
+                return FailOnSave ? Task.FromException<int>(SaveFailure) :
+                    base.SaveChangesAsync(cancellationToken);
+            }
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)

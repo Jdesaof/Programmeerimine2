@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using KooliProjekt.Application.Data;
 using KooliProjekt.Application.Data.Repositories;
 using KooliProjekt.Application.Features.Partiid;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
 
@@ -245,6 +246,117 @@ namespace KooliProjekt.Application.UnitTests.Features
                 Kirjeldus = "Test Kirjeldus",
                 Tulemus = "Test Tulemus",
             };
+        }
+        [Fact]
+        public async Task Delete_should_remove_only_requested_entity_and_persist_changes()
+        {
+            DbContext.Partiid.Add(CreateListEntity(1));
+            DbContext.Partiid.Add(CreateListEntity(2));
+            await DbContext.SaveChangesAsync();
+            DbContext.ChangeTracker.Clear();
+            var handler = new DeletePartiiCommandHandler(DbContext);
+
+            var result = await handler.Handle(
+                new DeletePartiiCommand { Id = 1 }, CancellationToken.None);
+
+            Assert.NotNull(result);
+            Assert.False(result.HasErrors);
+            // Clear tracked state: the assertion must check the saved store.
+            DbContext.ChangeTracker.Clear();
+            Assert.False(await DbContext.Partiid.AnyAsync(x => x.Id == 1));
+            Assert.Equal(2, (await DbContext.Partiid.SingleAsync()).Id);
+        }
+
+        [Fact]
+        public async Task Delete_should_succeed_when_entity_does_not_exist()
+        {
+            DbContext.Partiid.Add(CreateListEntity(1));
+            await DbContext.SaveChangesAsync();
+            var handler = new DeletePartiiCommandHandler(DbContext);
+
+            var result = await handler.Handle(
+                new DeletePartiiCommand { Id = 999 }, CancellationToken.None);
+
+            Assert.NotNull(result);
+            Assert.False(result.HasErrors);
+            DbContext.ChangeTracker.Clear();
+            Assert.Equal(1, (await DbContext.Partiid.SingleAsync()).Id);
+        }
+
+        [Fact]
+        public async Task Delete_should_succeed_when_called_twice()
+        {
+            DbContext.Partiid.Add(CreateListEntity(1));
+            await DbContext.SaveChangesAsync();
+            var handler = new DeletePartiiCommandHandler(DbContext);
+
+            var first = await handler.Handle(new DeletePartiiCommand { Id = 1 }, CancellationToken.None);
+            var second = await handler.Handle(new DeletePartiiCommand { Id = 1 }, CancellationToken.None);
+
+            Assert.NotNull(first);
+            Assert.NotNull(second);
+            Assert.False(first.HasErrors);
+            Assert.False(second.HasErrors);
+            DbContext.ChangeTracker.Clear();
+            Assert.Empty(await DbContext.Partiid.ToListAsync());
+        }
+
+        [Fact]
+        public async Task Delete_should_throw_ArgumentNullException_when_request_is_null()
+        {
+            using var context = GetFaultyDbContext();
+            var handler = new DeletePartiiCommandHandler(context);
+
+            var error = await Assert.ThrowsAsync<ArgumentNullException>(
+                () => handler.Handle(null, CancellationToken.None));
+
+            Assert.Equal("request", error.ParamName);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-10)]
+        public async Task Delete_should_return_id_error_without_query_when_id_is_invalid(int id)
+        {
+            using var context = GetFaultyDbContext();
+            var handler = new DeletePartiiCommandHandler(context);
+
+            var result = await handler.Handle(
+                new DeletePartiiCommand { Id = id }, CancellationToken.None);
+
+            Assert.NotNull(result);
+            Assert.True(result.HasErrors);
+            Assert.NotNull(result.PropertyErrors);
+            Assert.Single(result.PropertyErrors);
+            Assert.True(result.PropertyErrors.ContainsKey("Id"));
+            Assert.False(string.IsNullOrWhiteSpace(result.PropertyErrors["Id"]));
+        }
+
+        [Fact]
+        public async Task Delete_should_propagate_database_query_failure()
+        {
+            using var context = GetFaultyDbContext();
+            var handler = new DeletePartiiCommandHandler(context);
+
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => handler.Handle(new DeletePartiiCommand { Id = 1 }, CancellationToken.None));
+        }
+
+        [Fact]
+        public async Task Delete_should_propagate_save_failure_without_persisting_delete()
+        {
+            using var context = GetDeleteSaveFailingDbContext();
+            context.Partiid.Add(CreateListEntity(1));
+            await context.SaveChangesAsync();
+            context.FailOnSave = true;
+            var handler = new DeletePartiiCommandHandler(context);
+
+            var error = await Assert.ThrowsAsync<InvalidOperationException>(
+                () => handler.Handle(new DeletePartiiCommand { Id = 1 }, CancellationToken.None));
+
+            Assert.Same(context.SaveFailure, error);
+            context.ChangeTracker.Clear();
+            Assert.True(await context.Partiid.AnyAsync(x => x.Id == 1));
         }
     }
 }
