@@ -1,4 +1,4 @@
-﻿using KooliProjekt.Application.Data;
+using KooliProjekt.Application.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace KooliProjekt.Application.UnitTests
@@ -23,6 +23,13 @@ namespace KooliProjekt.Application.UnitTests
                 _dbContext = new ApplicationDbContext(options);
                 return _dbContext;
             }
+        }
+
+        // 22.01: a context with no provider exposes accidental database access.
+        protected ApplicationDbContext GetFaultyDbContext()
+        {
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>();
+            return new ApplicationDbContext(options.Options);
         }
 
         protected virtual void Dispose(bool disposing)

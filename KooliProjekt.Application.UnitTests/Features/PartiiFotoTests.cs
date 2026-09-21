@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using KooliProjekt.Application.Data;
@@ -9,7 +10,7 @@ using Xunit;
 
 namespace KooliProjekt.Application.UnitTests.Features
 {
-    public class PartiiFotoTests
+    public class PartiiFotoTests : ServiceTestBase
     {
         [Fact]
         public async Task Get_should_return_dto_when_entity_exists()
@@ -99,6 +100,142 @@ namespace KooliProjekt.Application.UnitTests.Features
             Assert.Same(expected, actual);
             repository.Verify(x => x.GetAsync(17, CancellationToken.None), Times.Once);
             repository.VerifyNoOtherCalls();
+        }
+        [Theory]
+        [InlineData(1, 5, 1)]
+        [InlineData(2, 5, 6)]
+        [InlineData(3, 2, 11)]
+        [InlineData(4, 0, 16)]
+        public async Task List_should_return_requested_page_in_id_order(
+            int page, int expectedCount, int firstId)
+        {
+            // Insert in reverse order to detect a missing OrderBy.
+            for (int id = 12; id >= 1; id--)
+                DbContext.PartiiFotod.Add(CreateListEntity(id));
+            await DbContext.SaveChangesAsync();
+            DbContext.ChangeTracker.Clear();
+            var handler = new ListPartiiFotodQueryHandler(DbContext);
+
+            var result = await handler.Handle(
+                new ListPartiiFotodQuery { Page = page, PageSize = 5 },
+                CancellationToken.None);
+
+            Assert.NotNull(result);
+            Assert.False(result.HasErrors);
+            Assert.NotNull(result.Value);
+            Assert.Equal(page, result.Value.CurrentPage);
+            Assert.Equal(5, result.Value.PageSize);
+            Assert.Equal(12, result.Value.RowCount);
+            Assert.Equal(3, result.Value.PageCount);
+            Assert.Equal(expectedCount, result.Value.Results.Count);
+            Assert.Equal(
+                Enumerable.Range(firstId, expectedCount),
+                result.Value.Results.Select(x => x.Id));
+            Assert.Empty(DbContext.ChangeTracker.Entries());
+        }
+
+        [Fact]
+        public async Task List_should_return_empty_page_when_database_is_empty()
+        {
+            var handler = new ListPartiiFotodQueryHandler(DbContext);
+
+            var result = await handler.Handle(
+                new ListPartiiFotodQuery { Page = 1, PageSize = 5 },
+                CancellationToken.None);
+
+            Assert.NotNull(result);
+            Assert.False(result.HasErrors);
+            Assert.NotNull(result.Value);
+            Assert.Empty(result.Value.Results);
+            Assert.Equal(0, result.Value.RowCount);
+            Assert.Equal(0, result.Value.PageCount);
+            Assert.Equal(1, result.Value.CurrentPage);
+            Assert.Equal(5, result.Value.PageSize);
+        }
+
+        [Fact]
+        public async Task List_should_accept_maximum_page_size()
+        {
+            DbContext.PartiiFotod.Add(CreateListEntity(1));
+            await DbContext.SaveChangesAsync();
+            var handler = new ListPartiiFotodQueryHandler(DbContext);
+
+            var result = await handler.Handle(
+                new ListPartiiFotodQuery { Page = 1, PageSize = 100 },
+                CancellationToken.None);
+
+            Assert.NotNull(result);
+            Assert.False(result.HasErrors);
+            Assert.NotNull(result.Value);
+            Assert.Equal(100, result.Value.PageSize);
+            Assert.Equal(1, result.Value.RowCount);
+            Assert.Equal(1, result.Value.PageCount);
+            Assert.Equal(1, Assert.Single(result.Value.Results).Id);
+        }
+
+        [Fact]
+        public async Task List_should_throw_ArgumentNullException_when_request_is_null()
+        {
+            using var context = GetFaultyDbContext();
+            var handler = new ListPartiiFotodQueryHandler(context);
+
+            var error = await Assert.ThrowsAsync<ArgumentNullException>(
+                () => handler.Handle(null, CancellationToken.None));
+
+            Assert.Equal("request", error.ParamName);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-10)]
+        public async Task List_should_throw_ArgumentException_when_page_is_invalid(int page)
+        {
+            var handler = new ListPartiiFotodQueryHandler(DbContext);
+
+            var error = await Assert.ThrowsAsync<ArgumentException>(
+                () => handler.Handle(
+                    new ListPartiiFotodQuery { Page = page, PageSize = 5 },
+                    CancellationToken.None));
+
+            Assert.Equal("page", error.ParamName);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-10)]
+        [InlineData(101)]
+        public async Task List_should_throw_ArgumentException_when_page_size_is_invalid(int pageSize)
+        {
+            var handler = new ListPartiiFotodQueryHandler(DbContext);
+
+            var error = await Assert.ThrowsAsync<ArgumentException>(
+                () => handler.Handle(
+                    new ListPartiiFotodQuery { Page = 1, PageSize = pageSize },
+                    CancellationToken.None));
+
+            Assert.Equal("pageSize", error.ParamName);
+        }
+
+        [Fact]
+        public async Task List_should_propagate_database_failure()
+        {
+            using var context = GetFaultyDbContext();
+            var handler = new ListPartiiFotodQueryHandler(context);
+
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => handler.Handle(
+                    new ListPartiiFotodQuery { Page = 1, PageSize = 5 },
+                    CancellationToken.None));
+        }
+
+        private static PartiiFoto CreateListEntity(int id)
+        {
+            return new PartiiFoto
+            {
+                Id = id,
+                PartiiId = 3,
+                FailiTee = "Test FailiTee",
+            };
         }
     }
 }
