@@ -1,0 +1,5 @@
+﻿<RunSettings>
+ <DataCollectionRunSettings><DataCollectors><DataCollector friendlyName="XPlat Code Coverage">
+  <Configuration><Format>cobertura</Format><Include>[KooliProjekt.Application]*</Include></Configuration>
+ </DataCollector></DataCollectors></DataCollectionRunSettings>
+</RunSettings>

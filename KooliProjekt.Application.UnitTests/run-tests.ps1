@@ -53,6 +53,7 @@ function Get-FileCoverage($group) {
 }
 $files = @($classes | Group-Object filename | ForEach-Object { Get-FileCoverage $_ })
 $deleteFiles = @($files | Where-Object IsDelete)
+$displayFiles = @($files | Where-Object { $_.IsDelete -or $_.File -match '(^|[\\/])Save\w+CommandHandler\.cs$' })
 $expected = @('DeleteOluCommandHandler.cs','DeletePartiiCommandHandler.cs','DeleteKoostisosaCommandHandler.cs','DeleteMaitsmineCommandHandler.cs','DeletePruulimisLogiCommandHandler.cs','DeletePartiiFotoCommandHandler.cs')
 $problems = @()
 foreach ($name in $expected) {
@@ -72,10 +73,10 @@ $html = [Text.StringBuilder]::new()
 [void]$html.Append("<p>Tests: $($counters.total); passed: $($counters.passed); failed: $($counters.failed).</p>")
 $overall = Percentage ([double]::Parse($coverage.coverage.GetAttribute('line-rate'),$culture))
 [void]$html.Append("<p>Whole Application assembly line coverage: <strong>$overall</strong>.</p>")
-[void]$html.Append('<p class="note">23.01 checks require full coverage of the six Delete handlers. Overall application coverage is shown separately and is not expected to be 100% at this stage. Green: executed; red: not executed; pink: incomplete branch coverage. This report includes the complete Application assembly without the exclusions planned for 12.02.</p>')
-[void]$html.Append('<h2>Delete handlers</h2><table><tr><th>File</th><th>Lines</th><th>Branches</th></tr>')
+[void]$html.Append('<p class="note">23.01 checks require full coverage of the six Delete handlers. 05.02 adds Save behavior tests; Save coverage is also displayed. Unreachable null fallbacks for required fields can remain uncovered because validation rejects those inputs first. Overall application coverage is shown separately and is not expected to be 100% at this stage. Green: executed; red: not executed; pink: incomplete branch coverage. This report includes the complete Application assembly without the exclusions planned for 12.02.</p>')
+[void]$html.Append('<h2>Delete and Save handlers</h2><table><tr><th>File</th><th>Lines</th><th>Branches</th></tr>')
 $index = 0
-foreach ($item in ($deleteFiles | Sort-Object File)) {
+foreach ($item in ($displayFiles | Sort-Object File)) {
     $item | Add-Member -NotePropertyName Anchor -NotePropertyValue "delete-$index"
     $index++
     $name = Escape-Html ([IO.Path]::GetFileName($item.File))
@@ -87,7 +88,7 @@ foreach ($item in ($files | Sort-Object File)) {
     [void]$html.Append("<tr><td>$(Escape-Html $item.File)</td><td>$($item.Covered)/$($item.Total)</td><td>$($item.CoveredBranches)/$($item.Branches)</td></tr>")
 }
 [void]$html.Append('</table>')
-foreach ($item in ($deleteFiles | Sort-Object File)) {
+foreach ($item in ($displayFiles | Sort-Object File)) {
     [void]$html.Append("<section id='$($item.Anchor)'><h2>$(Escape-Html $item.File)</h2><div class='code'>")
     $sourcePath = $null
     foreach ($source in $sources) {
@@ -116,6 +117,6 @@ Write-Host "HTML REPORT: $reportPath"
 Write-Host "RAW COVERAGE: $($reports[0].FullName)"
 if($OpenReport){Start-Process -FilePath $reportPath}
 if($testExit -ne 0 -or [int]$counters.failed -ne 0){throw 'Unit tests failed; inspect the report.'}
-if([int]$counters.passed -lt 162){throw "Expected at least 162 passed tests, got $($counters.passed)."}
+if([int]$counters.passed -lt 237){throw "Expected at least 237 passed tests, got $($counters.passed)."}
 if($problems.Count){throw ($problems -join '; ')}
 Write-Host 'ALL TESTS PASSED; ALL 6 DELETE HANDLERS: 100% LINES AND BRANCHES.' -ForegroundColor Green
