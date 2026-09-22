@@ -1,0 +1,37 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KooliProjekt.WebAPI", "KooliProjekt.WebAPI\KooliProjekt.WebAPI.csproj", "{270516CE-9AB6-3904-314A-AA24FA8FBAEF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KooliProjekt.Application", "KooliProjekt.Application\KooliProjekt.Application.csproj", "{E41F8852-7DB4-44C4-9C2F-E59631D78E81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KooliProjekt.UnitTests", "KooliProjekt.Application.UnitTests\KooliProjekt.UnitTests.csproj", "{E540610F-0800-4347-B312-50B08AEE14D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KooliProjekt.IntegrationTests", "KooliProjekt.IntegrationTests\KooliProjekt.IntegrationTests.csproj", "{ED6C664D-58B3-44AB-8E86-BA91D55C6B38}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{270516CE-9AB6-3904-314A-AA24FA8FBAEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{270516CE-9AB6-3904-314A-AA24FA8FBAEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{270516CE-9AB6-3904-314A-AA24FA8FBAEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{270516CE-9AB6-3904-314A-AA24FA8FBAEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E41F8852-7DB4-44C4-9C2F-E59631D78E81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E41F8852-7DB4-44C4-9C2F-E59631D78E81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E41F8852-7DB4-44C4-9C2F-E59631D78E81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E41F8852-7DB4-44C4-9C2F-E59631D78E81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E540610F-0800-4347-B312-50B08AEE14D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E540610F-0800-4347-B312-50B08AEE14D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E540610F-0800-4347-B312-50B08AEE14D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E540610F-0800-4347-B312-50B08AEE14D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED6C664D-58B3-44AB-8E86-BA91D55C6B38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED6C664D-58B3-44AB-8E86-BA91D55C6B38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED6C664D-58B3-44AB-8E86-BA91D55C6B38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED6C664D-58B3-44AB-8E86-BA91D55C6B38}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
+
