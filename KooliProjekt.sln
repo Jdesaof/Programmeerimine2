@@ -10,12 +10,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KooliProjekt.UnitTests", "K
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KooliProjekt.IntegrationTests", "KooliProjekt.IntegrationTests\KooliProjekt.IntegrationTests.csproj", "{ED6C664D-58B3-44AB-8E86-BA91D55C6B38}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KooliProjekt.WindowsForms", "KooliProjekt.WindowsForms\KooliProjekt.WindowsForms.csproj", "{CBEFA156-570A-4539-91C3-4D79D156D170}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CBEFA156-570A-4539-91C3-4D79D156D170}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBEFA156-570A-4539-91C3-4D79D156D170}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBEFA156-570A-4539-91C3-4D79D156D170}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBEFA156-570A-4539-91C3-4D79D156D170}.Release|Any CPU.Build.0 = Release|Any CPU
+
 		{270516CE-9AB6-3904-314A-AA24FA8FBAEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{270516CE-9AB6-3904-314A-AA24FA8FBAEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{270516CE-9AB6-3904-314A-AA24FA8FBAEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
