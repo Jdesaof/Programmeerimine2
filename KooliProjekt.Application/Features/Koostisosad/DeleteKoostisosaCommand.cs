@@ -4,6 +4,7 @@ using MediatR;
 
 namespace KooliProjekt.Application.Features.Koostisosad
 {
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class DeleteKoostisosaCommand : IRequest<OperationResult>, ITransactional
     {
         public int Id { get; set; }

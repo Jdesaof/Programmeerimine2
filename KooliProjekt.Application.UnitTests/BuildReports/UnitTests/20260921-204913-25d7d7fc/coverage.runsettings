@@ -1,0 +1,5 @@
+﻿<RunSettings>
+ <DataCollectionRunSettings><DataCollectors><DataCollector friendlyName="XPlat Code Coverage">
+  <Configuration><Format>cobertura</Format><Include>[KooliProjekt.Application]*</Include><Exclude>[KooliProjekt.Application]KooliProjekt.Application.Behaviors.*,[KooliProjekt.Application]KooliProjekt.Application.Data.*,[KooliProjekt.Application]KooliProjekt.Application.Dto.*,[KooliProjekt.Application]KooliProjekt.Application.Infrastructure.*,[KooliProjekt.Application]KooliProjekt.Application.Migrations.*</Exclude><ExcludeByAttribute>ExcludeFromCodeCoverageAttribute</ExcludeByAttribute></Configuration>
+ </DataCollector></DataCollectors></DataCollectionRunSettings>
+</RunSettings>

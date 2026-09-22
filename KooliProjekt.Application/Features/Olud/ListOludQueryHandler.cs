@@ -1,4 +1,4 @@
-﻿using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using KooliProjekt.Application.Data;
@@ -26,8 +26,19 @@ namespace KooliProjekt.Application.Features.Olud
         {
             System.ArgumentNullException.ThrowIfNull(request);
 
-            var result = await _context.Olud
-                .AsNoTracking()
+            var query = _context.Olud.AsNoTracking();
+            if (!string.IsNullOrWhiteSpace(request.Nimi))
+            {
+                var text = request.Nimi.Trim();
+                query = query.Where(x => x.Nimi.Contains(text));
+            }
+            if (!string.IsNullOrWhiteSpace(request.Tuup))
+            {
+                var value = request.Tuup.Trim();
+                query = query.Where(x => x.Tuup == value);
+            }
+
+            var result = await query
                 .OrderBy(x => x.Id)
                 .GetPagedAsync(
                     request.Page,

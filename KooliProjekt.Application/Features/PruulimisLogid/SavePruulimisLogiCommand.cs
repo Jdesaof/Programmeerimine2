@@ -6,6 +6,7 @@ using MediatR;
 
 namespace KooliProjekt.Application.Features.PruulimisLogid
 {
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class SavePruulimisLogiCommand : IRequest<OperationResult<PruulimisLogiDto>>, ITransactional
     {
         public int Id { get; set; }

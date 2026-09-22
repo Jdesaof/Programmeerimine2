@@ -542,5 +542,65 @@ namespace KooliProjekt.Application.UnitTests.Features
                 Alkoholiprotsent = 6.5m,
             };
         }
+
+        [Theory]
+        [InlineData(null, null, "1,2,3,4")]
+        [InlineData("", null, "1,2,3,4")]
+        [InlineData("   ", null, "1,2,3,4")]
+        [InlineData("Alpha", null, "1,3,4")]
+        [InlineData(" Alpha ", null, "1,3,4")]
+        [InlineData("missing", null, "")]
+        [InlineData(null, "Lager", "1,2,4")]
+        [InlineData(null, "", "1,2,3,4")]
+        [InlineData(null, "  ", "1,2,3,4")]
+        [InlineData("Alpha", "Lager", "1,4")]
+        [InlineData("Alpha", " Lager ", "1,4")]
+        [InlineData("Beta", "Porter", "")]
+        public async Task Search_should_apply_individual_and_combined_filters(string text, string second, string expected)
+        {
+            await SeedSearchRecords();
+            var handler = new ListOludQueryHandler(DbContext);
+            var result = await handler.Handle(new ListOludQuery
+            {
+                Page = 1, PageSize = 100, Nimi = text, Tuup = second
+            }, CancellationToken.None);
+            var ids = expected.Length == 0 ? Array.Empty<int>() : expected.Split(',').Select(int.Parse).ToArray();
+            Assert.False(result.HasErrors);
+            Assert.Equal(ids, result.Value.Results.Select(x => x.Id).ToArray());
+            Assert.Equal(ids.Length, result.Value.RowCount);
+        }
+
+        [Theory]
+        [InlineData(1, 1)]
+        [InlineData(2, 4)]
+        [InlineData(3, 0)]
+        public async Task Search_should_filter_before_paging(int page, int expectedId)
+        {
+            await SeedSearchRecords();
+            var handler = new ListOludQueryHandler(DbContext);
+            var result = await handler.Handle(new ListOludQuery
+            {
+                Page = page, PageSize = 1, Nimi = "Alpha", Tuup = "Lager"
+            }, CancellationToken.None);
+            Assert.False(result.HasErrors);
+            Assert.Equal(2, result.Value.RowCount);
+            Assert.Equal(2, result.Value.PageCount);
+            Assert.Equal(page, result.Value.CurrentPage);
+            if (expectedId == 0) Assert.Empty(result.Value.Results);
+            else Assert.Equal(expectedId, Assert.Single(result.Value.Results).Id);
+        }
+
+        private async Task SeedSearchRecords()
+        {
+            foreach (var id in new[] { 4, 3, 2, 1 })
+            {
+                var entity = CreateListEntity(id);
+                entity.Nimi = id == 2 ? "Beta" : "Alpha " + id;
+                entity.Tuup = id == 3 ? "Porter" : "Lager";
+                DbContext.Olud.Add(entity);
+            }
+            await DbContext.SaveChangesAsync();
+            DbContext.ChangeTracker.Clear();
+        }
     }
 }

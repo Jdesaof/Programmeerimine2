@@ -33,7 +33,7 @@ namespace KooliProjekt.Application.Features.Olud
                 await _repository.GetAsync(request.Id, cancellationToken);
             if (entity == null) return result;
 
-            entity.Nimi = request.Nimi ?? string.Empty;
+            entity.Nimi = request.Nimi;
             entity.Kirjeldus = request.Kirjeldus ?? string.Empty;
             entity.Tuup = request.Tuup ?? string.Empty;
             entity.Alkoholiprotsent = request.Alkoholiprotsent;

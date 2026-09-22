@@ -26,8 +26,16 @@ namespace KooliProjekt.Application.Features.PartiiFotod
         {
             ArgumentNullException.ThrowIfNull(request);
 
-            var result = await _context.PartiiFotod
-                .AsNoTracking()
+            var query = _context.PartiiFotod.AsNoTracking();
+            if (!string.IsNullOrWhiteSpace(request.FailiTee))
+            {
+                var text = request.FailiTee.Trim();
+                query = query.Where(x => x.FailiTee.Contains(text));
+            }
+            if (request.PartiiId.HasValue)
+                query = query.Where(x => x.PartiiId == request.PartiiId.Value);
+
+            var result = await query
                 .OrderBy(x => x.Id)
                 .GetPagedAsync(request.Page, request.PageSize, cancellationToken);
 

@@ -6,6 +6,7 @@ using MediatR;
 
 namespace KooliProjekt.Application.Features.Koostisosad
 {
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class SaveKoostisosaCommand : IRequest<OperationResult<KoostisosaDto>>, ITransactional
     {
         public int Id { get; set; }

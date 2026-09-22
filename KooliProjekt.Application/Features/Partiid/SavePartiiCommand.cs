@@ -6,6 +6,7 @@ using MediatR;
 
 namespace KooliProjekt.Application.Features.Partiid
 {
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class SavePartiiCommand : IRequest<OperationResult<PartiiDto>>, ITransactional
     {
         public int Id { get; set; }

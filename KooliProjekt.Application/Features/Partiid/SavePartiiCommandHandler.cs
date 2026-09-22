@@ -39,7 +39,7 @@ namespace KooliProjekt.Application.Features.Partiid
                 return result.AddPropertyError("OluId", "Referenced record does not exist.");
 
             entity.OluId = request.OluId;
-            entity.Kood = request.Kood ?? string.Empty;
+            entity.Kood = request.Kood;
             entity.Kuupaev = request.Kuupaev;
             entity.Kirjeldus = request.Kirjeldus ?? string.Empty;
             entity.Tulemus = request.Tulemus ?? string.Empty;

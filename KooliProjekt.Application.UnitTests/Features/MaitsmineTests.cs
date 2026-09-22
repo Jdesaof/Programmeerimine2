@@ -565,5 +565,63 @@ namespace KooliProjekt.Application.UnitTests.Features
                 Kommentaar = "New tasting",
             };
         }
+
+        [Theory]
+        [InlineData(null, null, "1,2,3,4")]
+        [InlineData("", null, "1,2,3,4")]
+        [InlineData("   ", null, "1,2,3,4")]
+        [InlineData("Alpha", null, "1,3,4")]
+        [InlineData(" Alpha ", null, "1,3,4")]
+        [InlineData("missing", null, "")]
+        [InlineData(null, 7, "1,2,4")]
+        [InlineData(null, 0, "")]
+        [InlineData("Alpha", 7, "1,4")]
+        [InlineData("Beta", 8, "")]
+        public async Task Search_should_apply_individual_and_combined_filters(string text, int? second, string expected)
+        {
+            await SeedSearchRecords();
+            var handler = new ListMaitsmisedQueryHandler(DbContext);
+            var result = await handler.Handle(new ListMaitsmisedQuery
+            {
+                Page = 1, PageSize = 100, Degusteerija = text, PartiiId = second
+            }, CancellationToken.None);
+            var ids = expected.Length == 0 ? Array.Empty<int>() : expected.Split(',').Select(int.Parse).ToArray();
+            Assert.False(result.HasErrors);
+            Assert.Equal(ids, result.Value.Results.Select(x => x.Id).ToArray());
+            Assert.Equal(ids.Length, result.Value.RowCount);
+        }
+
+        [Theory]
+        [InlineData(1, 1)]
+        [InlineData(2, 4)]
+        [InlineData(3, 0)]
+        public async Task Search_should_filter_before_paging(int page, int expectedId)
+        {
+            await SeedSearchRecords();
+            var handler = new ListMaitsmisedQueryHandler(DbContext);
+            var result = await handler.Handle(new ListMaitsmisedQuery
+            {
+                Page = page, PageSize = 1, Degusteerija = "Alpha", PartiiId = 7
+            }, CancellationToken.None);
+            Assert.False(result.HasErrors);
+            Assert.Equal(2, result.Value.RowCount);
+            Assert.Equal(2, result.Value.PageCount);
+            Assert.Equal(page, result.Value.CurrentPage);
+            if (expectedId == 0) Assert.Empty(result.Value.Results);
+            else Assert.Equal(expectedId, Assert.Single(result.Value.Results).Id);
+        }
+
+        private async Task SeedSearchRecords()
+        {
+            foreach (var id in new[] { 4, 3, 2, 1 })
+            {
+                var entity = CreateListEntity(id);
+                entity.Degusteerija = id == 2 ? "Beta" : "Alpha " + id;
+                entity.PartiiId = id == 3 ? 8 : 7;
+                DbContext.Maitsmised.Add(entity);
+            }
+            await DbContext.SaveChangesAsync();
+            DbContext.ChangeTracker.Clear();
+        }
     }
 }

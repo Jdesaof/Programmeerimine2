@@ -6,6 +6,7 @@ using MediatR;
 
 namespace KooliProjekt.Application.Features.Olud
 {
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class SaveOluCommand : IRequest<OperationResult<OluDto>>, ITransactional
     {
         public int Id { get; set; }

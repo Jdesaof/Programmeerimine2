@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,8 +27,16 @@ namespace KooliProjekt.Application.Features.Partiid
         {
             ArgumentNullException.ThrowIfNull(request);
 
-            var result = await _context.Partiid
-                .AsNoTracking()
+            var query = _context.Partiid.AsNoTracking();
+            if (!string.IsNullOrWhiteSpace(request.Kood))
+            {
+                var text = request.Kood.Trim();
+                query = query.Where(x => x.Kood.Contains(text));
+            }
+            if (request.OluId.HasValue)
+                query = query.Where(x => x.OluId == request.OluId.Value);
+
+            var result = await query
                 .OrderBy(x => x.Id)
                 .GetPagedAsync(
                     request.Page,

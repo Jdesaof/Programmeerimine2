@@ -4,6 +4,7 @@ using MediatR;
 
 namespace KooliProjekt.Application.Features.Partiid
 {
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class DeletePartiiCommand : IRequest<OperationResult>, ITransactional
     {
         public int Id { get; set; }

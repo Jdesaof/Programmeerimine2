@@ -26,8 +26,16 @@ namespace KooliProjekt.Application.Features.Maitsmised
         {
             ArgumentNullException.ThrowIfNull(request);
 
-            var result = await _context.Maitsmised
-                .AsNoTracking()
+            var query = _context.Maitsmised.AsNoTracking();
+            if (!string.IsNullOrWhiteSpace(request.Degusteerija))
+            {
+                var text = request.Degusteerija.Trim();
+                query = query.Where(x => x.Degusteerija.Contains(text));
+            }
+            if (request.PartiiId.HasValue)
+                query = query.Where(x => x.PartiiId == request.PartiiId.Value);
+
+            var result = await query
                 .OrderBy(x => x.Id)
                 .GetPagedAsync(request.Page, request.PageSize, cancellationToken);
 

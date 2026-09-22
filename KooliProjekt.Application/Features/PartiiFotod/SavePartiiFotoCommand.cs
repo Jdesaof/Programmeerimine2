@@ -6,6 +6,7 @@ using MediatR;
 
 namespace KooliProjekt.Application.Features.PartiiFotod
 {
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class SavePartiiFotoCommand : IRequest<OperationResult<PartiiFotoDto>>, ITransactional
     {
         public int Id { get; set; }

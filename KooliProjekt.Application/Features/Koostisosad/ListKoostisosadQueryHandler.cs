@@ -26,8 +26,16 @@ namespace KooliProjekt.Application.Features.Koostisosad
         {
             ArgumentNullException.ThrowIfNull(request);
 
-            var result = await _context.Koostisosad
-                .AsNoTracking()
+            var query = _context.Koostisosad.AsNoTracking();
+            if (!string.IsNullOrWhiteSpace(request.Nimetus))
+            {
+                var text = request.Nimetus.Trim();
+                query = query.Where(x => x.Nimetus.Contains(text));
+            }
+            if (request.PartiiId.HasValue)
+                query = query.Where(x => x.PartiiId == request.PartiiId.Value);
+
+            var result = await query
                 .OrderBy(x => x.Id)
                 .GetPagedAsync(request.Page, request.PageSize, cancellationToken);
 

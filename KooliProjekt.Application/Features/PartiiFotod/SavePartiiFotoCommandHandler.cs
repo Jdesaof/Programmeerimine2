@@ -39,7 +39,7 @@ namespace KooliProjekt.Application.Features.PartiiFotod
                 return result.AddPropertyError("PartiiId", "Referenced record does not exist.");
 
             entity.PartiiId = request.PartiiId;
-            entity.FailiTee = request.FailiTee ?? string.Empty;
+            entity.FailiTee = request.FailiTee;
             await _repository.SaveAsync(entity, cancellationToken);
             result.Value = PartiiFotoDto.FromEntity(entity);
             return result;

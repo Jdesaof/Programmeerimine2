@@ -40,8 +40,8 @@ namespace KooliProjekt.Application.Features.PruulimisLogid
 
             entity.PartiiId = request.PartiiId;
             entity.Kuupaev = request.Kuupaev;
-            entity.Kasutaja = request.Kasutaja ?? string.Empty;
-            entity.Kirjeldus = request.Kirjeldus ?? string.Empty;
+            entity.Kasutaja = request.Kasutaja;
+            entity.Kirjeldus = request.Kirjeldus;
             await _repository.SaveAsync(entity, cancellationToken);
             result.Value = PruulimisLogiDto.FromEntity(entity);
             return result;

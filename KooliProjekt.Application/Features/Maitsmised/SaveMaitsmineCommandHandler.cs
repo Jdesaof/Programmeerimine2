@@ -40,7 +40,7 @@ namespace KooliProjekt.Application.Features.Maitsmised
 
             entity.PartiiId = request.PartiiId;
             entity.Kuupaev = request.Kuupaev;
-            entity.Degusteerija = request.Degusteerija ?? string.Empty;
+            entity.Degusteerija = request.Degusteerija;
             entity.Hinne = request.Hinne;
             entity.Kommentaar = request.Kommentaar ?? string.Empty;
             await _repository.SaveAsync(entity, cancellationToken);

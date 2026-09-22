@@ -6,6 +6,7 @@ using MediatR;
 
 namespace KooliProjekt.Application.Features.Maitsmised
 {
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class SaveMaitsmineCommand : IRequest<OperationResult<MaitsmineDto>>, ITransactional
     {
         public int Id { get; set; }

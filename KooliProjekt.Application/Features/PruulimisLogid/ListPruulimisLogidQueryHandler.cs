@@ -26,8 +26,16 @@ namespace KooliProjekt.Application.Features.PruulimisLogid
         {
             ArgumentNullException.ThrowIfNull(request);
 
-            var result = await _context.PruulimisLogid
-                .AsNoTracking()
+            var query = _context.PruulimisLogid.AsNoTracking();
+            if (!string.IsNullOrWhiteSpace(request.Kasutaja))
+            {
+                var text = request.Kasutaja.Trim();
+                query = query.Where(x => x.Kasutaja.Contains(text));
+            }
+            if (request.PartiiId.HasValue)
+                query = query.Where(x => x.PartiiId == request.PartiiId.Value);
+
+            var result = await query
                 .OrderBy(x => x.Id)
                 .GetPagedAsync(request.Page, request.PageSize, cancellationToken);
 
