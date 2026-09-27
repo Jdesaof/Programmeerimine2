@@ -26,7 +26,14 @@ public partial class Form1 : Form
         PagedResult<Olu> result;
         do
         {
-            result = await apiClient.List(page, 100, lifetime.Token);
+            var response = await apiClient.List(page, 100, lifetime.Token);
+            if (lifetime.IsCancellationRequested) return;
+            if (response.HasErrors)
+            {
+                ShowError("Viga andmete laadimisel", response);
+                return;
+            }
+            result = response.Value;
             items.AddRange(result.Results);
             page++;
         } while (page <= result.PageCount);
@@ -86,14 +93,46 @@ public partial class Form1 : Form
             Id = currentId, Nimi = nameBox.Text, Tuup = typeBox.Text,
             Kirjeldus = descriptionBox.Text, Alkoholiprotsent = alcoholBox.Value
         }, lifetime.Token);
-        await LoadData(saved.Id);
+        if (lifetime.IsCancellationRequested) return;
+        if (saved.HasErrors)
+        {
+            ShowError("Viga salvestamisel", saved);
+            return;
+        }
+        await LoadData(saved.Value.Id);
     });
     private async void DeleteButton_Click(object sender, EventArgs e)
     {
         var id = currentId;
         if (id <= 0 || MessageBox.Show(this, $"Kustutada õlu \"{nameBox.Text}\"?",
             "Kinnita kustutamine", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
-        await RunAction(async () => { await apiClient.Delete(id, lifetime.Token); await LoadData(); });
+        await RunAction(async () =>
+        {
+            var result = await apiClient.Delete(id, lifetime.Token);
+            if (lifetime.IsCancellationRequested) return;
+            if (result.HasErrors)
+            {
+                ShowError("Viga kustutamisel", result);
+                return;
+            }
+            await LoadData();
+        });
+    }
+    // Adapted from the teacher's 20.03 ShowError: display both kinds of API errors.
+    private void ShowError(string message, OperationResult result)
+    {
+        var error = message + "\r\n";
+        var apiErrors = "";
+        var propertyErrors = "";
+        if (result.Errors != null)
+            foreach (var apiError in result.Errors) apiErrors += apiError + "\r\n";
+        if (result.PropertyErrors != null)
+            foreach (var propertyError in result.PropertyErrors)
+                propertyErrors += propertyError.Key + ": " + propertyError.Value + "\r\n";
+        if (!string.IsNullOrEmpty(apiErrors)) error += "\r\n" + apiErrors;
+        if (!string.IsNullOrEmpty(propertyErrors)) error += "\r\n" + propertyErrors;
+        statusLabel.Text = message;
+        MessageBox.Show(this, error.Trim(), "Viga!", MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
     private async Task RunAction(Func<Task> action)
     {
@@ -103,13 +142,11 @@ public partial class Form1 : Form
         try { await action(); }
         catch (OperationCanceledException) when (lifetime.IsCancellationRequested) { }
         catch (Exception error) when (error is HttpRequestException || error is InvalidOperationException
-            || error is System.Text.Json.JsonException || error is OperationCanceledException)
+            || error is Newtonsoft.Json.JsonException || error is OperationCanceledException)
         {
             if (!lifetime.IsCancellationRequested)
             {
-                statusLabel.Text = "Toiming ebaõnnestus.";
-                MessageBox.Show(this, "Kontrolli, et WebAPI töötab ja sisestatud andmed on õiged.\n\n" + error.Message,
-                    "Viga", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ShowError("Toiming ebaõnnestus", new OperationResult().AddError(error.Message));
             }
         }
         finally { if (!lifetime.IsCancellationRequested) SetBusy(false); }
