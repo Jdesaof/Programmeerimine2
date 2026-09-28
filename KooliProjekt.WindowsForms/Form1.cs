@@ -1,125 +1,97 @@
-using KooliProjekt.WindowsForms.Api;
+using System.ComponentModel;
+
 namespace KooliProjekt.WindowsForms;
 
-public partial class Form1 : Form
+public partial class Form1 : Form, IMainView
 {
-    private readonly IApiClient apiClient;
+
     private readonly CancellationTokenSource lifetime = new();
     private bool busy;
-    private int currentId;
+    private MainViewPresenter presenter;
     public Form1() { InitializeComponent(); }
-    public Form1(IApiClient apiClient) : this()
-    {
-        this.apiClient = apiClient ?? throw new ArgumentNullException(nameof(apiClient));
-    }
     private async void Form1_Load(object sender, EventArgs e)
     {
-        if (apiClient != null) await RunAction(() => LoadData());
+        if (presenter != null) await RunAction(() => LoadData());
     }
-    private async void ReloadButton_Click(object sender, EventArgs e) => await RunAction(() => LoadData(currentId));
+    private async void ReloadButton_Click(object sender, EventArgs e) => await RunAction(() => LoadData(CurrentId));
 
-    private async Task LoadData(int selectId = 0)
+    private Task LoadData(int selectId = 0) => presenter.LoadData(selectId, lifetime.Token);
+
+    public void SetPresenter(MainViewPresenter value) =>
+        presenter = value ?? throw new ArgumentNullException(nameof(value));
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public IList<Olu> DataSource
     {
-        // The API is paginated; include all pages so a newly added record remains accessible.
-        var items = new List<Olu>();
-        var page = 1;
-        PagedResult<Olu> result;
-        do
+        get => dataGridView1.DataSource as IList<Olu>;
+        set
         {
-            var response = await apiClient.List(page, 100, lifetime.Token);
-            if (lifetime.IsCancellationRequested) return;
-            if (response.HasErrors)
-            {
-                ShowError("Viga andmete laadimisel", response);
-                return;
-            }
-            result = response.Value;
-            items.AddRange(result.Results);
-            page++;
-        } while (page <= result.PageCount);
-        if (lifetime.IsCancellationRequested) return;
-        dataGridView1.DataSource = items;
-        dataGridView1.ClearSelection();
-        ClearFields();
-        foreach (DataGridViewRow row in dataGridView1.Rows)
-        {
-            if (row.DataBoundItem is Olu item && item.Id == selectId)
-            {
-                row.Selected = true;
-                dataGridView1.CurrentCell = row.Cells[0];
-                SetFields(item);
-                break;
-            }
+            dataGridView1.DataSource = value;
+            statusLabel.Text = $"Kuvatud {value?.Count ?? 0} kirjet";
         }
-        statusLabel.Text = $"Kuvatud {items.Count} kirjet";
     }
-
-    private void SelectionChanged(object sender, EventArgs e)
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public Olu SelectedItem
     {
-        if (dataGridView1.SelectedRows.Count > 0 && dataGridView1.SelectedRows[0].DataBoundItem is Olu item)
-            SetFields(item);
+        get => dataGridView1.SelectedRows.Count > 0
+            ? dataGridView1.SelectedRows[0].DataBoundItem as Olu : null;
+        set
+        {
+            dataGridView1.ClearSelection();
+            dataGridView1.CurrentCell = null;
+            if (value == null) return;
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+                if (row.DataBoundItem is Olu item && item.Id == value.Id)
+                {
+                    dataGridView1.CurrentCell = row.Cells[0];
+                    row.Selected = true;
+                    break;
+                }
+        }
     }
-    private void SetFields(Olu item)
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public int CurrentId
     {
-        currentId = item.Id;
-        idBox.Text = item.Id.ToString();
-        nameBox.Text = item.Nimi;
-        typeBox.Text = item.Tuup;
-        descriptionBox.Text = item.Kirjeldus;
-        alcoholBox.Value = Math.Clamp(item.Alkoholiprotsent, 0m, 100m);
-        deleteButton.Enabled = !busy && currentId > 0;
+        get => int.TryParse(idBox.Text, out var id) ? id : 0;
+        set
+        {
+            idBox.Text = value > 0 ? value.ToString() : "Uus";
+            deleteButton.Enabled = !busy && value > 0;
+        }
     }
-    private void ClearFields()
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public string CurrentNimi { get => nameBox.Text; set => nameBox.Text = value; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public string CurrentTuup { get => typeBox.Text; set => typeBox.Text = value; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public string CurrentKirjeldus { get => descriptionBox.Text; set => descriptionBox.Text = value; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public decimal CurrentAlkoholiprotsent
     {
-        currentId = 0;
-        idBox.Text = "Uus";
-        nameBox.Clear();
-        typeBox.Clear();
-        descriptionBox.Clear();
-        alcoholBox.Value = 0;
-        deleteButton.Enabled = false;
+        get => alcoholBox.Value;
+        set => alcoholBox.Value = Math.Clamp(value, alcoholBox.Minimum, alcoholBox.Maximum);
     }
+    private void SelectionChanged(object sender, EventArgs e) => presenter?.SetSelection(SelectedItem);
     private void AddButton_Click(object sender, EventArgs e)
     {
-        dataGridView1.ClearSelection();
-        ClearFields();
+        presenter.Add();
         nameBox.Focus();
         statusLabel.Text = "Uus kirje — täida väljad ja vajuta Salvesta.";
     }
-    private async void SaveButton_Click(object sender, EventArgs e) => await RunAction(async () =>
-    {
-        var saved = await apiClient.Save(new Olu
-        {
-            Id = currentId, Nimi = nameBox.Text, Tuup = typeBox.Text,
-            Kirjeldus = descriptionBox.Text, Alkoholiprotsent = alcoholBox.Value
-        }, lifetime.Token);
-        if (lifetime.IsCancellationRequested) return;
-        if (saved.HasErrors)
-        {
-            ShowError("Viga salvestamisel", saved);
-            return;
-        }
-        await LoadData(saved.Value.Id);
-    });
+    private async void SaveButton_Click(object sender, EventArgs e) =>
+        await RunAction(() => presenter.Save(lifetime.Token));
     private async void DeleteButton_Click(object sender, EventArgs e)
     {
-        var id = currentId;
-        if (id <= 0 || MessageBox.Show(this, $"Kustutada õlu \"{nameBox.Text}\"?",
-            "Kinnita kustutamine", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
+        var previousStatus = statusLabel.Text;
         await RunAction(async () =>
         {
-            var result = await apiClient.Delete(id, lifetime.Token);
-            if (lifetime.IsCancellationRequested) return;
-            if (result.HasErrors)
-            {
-                ShowError("Viga kustutamisel", result);
-                return;
-            }
-            await LoadData();
+            if (!await presenter.Delete(lifetime.Token)) statusLabel.Text = previousStatus;
         });
     }
+    public bool ConfirmDelete() => MessageBox.Show(this, $"Kustutada õlu \"{CurrentNimi}\"?",
+        "Kinnita kustutamine", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
     // Adapted from the teacher's 20.03 ShowError: display both kinds of API errors.
-    private void ShowError(string message, OperationResult result)
+    public void ShowError(string message, OperationResult result)
     {
         var error = message + "\r\n";
         var apiErrors = "";
@@ -159,7 +131,7 @@ public partial class Form1 : Form
         reloadButton.Enabled = !value;
         addButton.Enabled = !value;
         saveButton.Enabled = !value;
-        deleteButton.Enabled = !value && currentId > 0;
+        deleteButton.Enabled = !value && CurrentId > 0;
     }
     protected override void OnFormClosing(FormClosingEventArgs e)
     {

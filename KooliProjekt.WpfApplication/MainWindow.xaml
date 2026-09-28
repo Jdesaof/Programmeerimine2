@@ -1,0 +1,30 @@
+<Window x:Class="KooliProjekt.WpfApplication.MainWindow"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ Title="Õlleprojekt — WPF" Width="1100" Height="680" MinWidth="850" MinHeight="500">
+ <Grid Margin="16">
+  <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+  <TextBlock Text="Õllede nimekiri" FontSize="22" FontWeight="SemiBold" Margin="0,0,0,16"/>
+  <Grid Grid.Row="1">
+   <Grid.ColumnDefinitions><ColumnDefinition Width="2*"/><ColumnDefinition Width="20"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+   <DataGrid x:Name="OludDataGrid" ItemsSource="{Binding Data}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+    AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" SelectionMode="Single" SelectionUnit="FullRow">
+    <DataGrid.Columns>
+     <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="45"/>
+     <DataGridTextColumn Header="Nimi" Binding="{Binding Nimi}" Width="*"/>
+     <DataGridTextColumn Header="Tüüp" Binding="{Binding Tuup}" Width="90"/>
+     <DataGridTextColumn Header="Alkohol (%)" Binding="{Binding Alkoholiprotsent}" Width="95"/>
+     <DataGridTextColumn Header="Kirjeldus" Binding="{Binding Kirjeldus}" Width="*"/>
+    </DataGrid.Columns>
+   </DataGrid>
+   <StackPanel Grid.Column="2">
+    <TextBlock Text="ID"/><TextBox Text="{Binding SelectedItem.Id, Mode=OneWay}" IsReadOnly="True" Margin="0,5,0,14" Padding="6"/>
+    <TextBlock Text="Nimi"/><TextBox Text="{Binding SelectedItem.Nimi, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" Margin="0,5,0,14" Padding="6"/>
+    <TextBlock Text="Tüüp"/><TextBox Text="{Binding SelectedItem.Tuup, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" Margin="0,5,0,14" Padding="6"/>
+    <TextBlock Text="Alkohol (%)"/><TextBox Text="{Binding SelectedItem.Alkoholiprotsent, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" Margin="0,5,0,14" Padding="6"/>
+    <TextBlock Text="Kirjeldus"/><TextBox Text="{Binding SelectedItem.Kirjeldus, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" Height="140" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,5,0,14" Padding="6"/>
+    <UniformGrid Columns="3"><Button Content="Lisa uus" Margin="0,0,5,0" Padding="5,9"/><Button Content="Salvesta" Margin="0,0,5,0" Padding="5,9"/><Button Content="Kustuta" Padding="5,9"/></UniformGrid>
+   </StackPanel>
+  </Grid>
+ </Grid>
+</Window>

@@ -12,7 +12,9 @@ internal static class Program
             Timeout = TimeSpan.FromSeconds(15)
         };
         IApiClient apiClient = new ApiClient(httpClient);
-        Application.Run(new Form1(apiClient));
+        var view = new Form1();
+        var presenter = new MainViewPresenter(apiClient, view);
+        Application.Run(view);
     }
 }
 

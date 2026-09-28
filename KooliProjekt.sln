@@ -12,12 +12,24 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KooliProjekt.IntegrationTes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KooliProjekt.WindowsForms", "KooliProjekt.WindowsForms\KooliProjekt.WindowsForms.csproj", "{CBEFA156-570A-4539-91C3-4D79D156D170}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KooliProjekt.WindowsForms.UnitTests", "KooliProjekt.WindowsForms.UnitTests\KooliProjekt.WindowsForms.UnitTests.csproj", "{72529AA7-055A-4BE2-B12D-59E809880317}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KooliProjekt.WpfApplication", "KooliProjekt.WpfApplication\KooliProjekt.WpfApplication.csproj", "{A048EF10-4C61-47A6-B808-620BAE687508}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A048EF10-4C61-47A6-B808-620BAE687508}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A048EF10-4C61-47A6-B808-620BAE687508}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A048EF10-4C61-47A6-B808-620BAE687508}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A048EF10-4C61-47A6-B808-620BAE687508}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72529AA7-055A-4BE2-B12D-59E809880317}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72529AA7-055A-4BE2-B12D-59E809880317}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72529AA7-055A-4BE2-B12D-59E809880317}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72529AA7-055A-4BE2-B12D-59E809880317}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CBEFA156-570A-4539-91C3-4D79D156D170}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CBEFA156-570A-4539-91C3-4D79D156D170}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CBEFA156-570A-4539-91C3-4D79D156D170}.Release|Any CPU.ActiveCfg = Release|Any CPU
