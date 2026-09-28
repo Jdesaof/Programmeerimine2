@@ -5,7 +5,7 @@
  <Grid Margin="16">
   <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
   <TextBlock Text="Õllede nimekiri" FontSize="22" FontWeight="SemiBold" Margin="0,0,0,16"/>
-  <Grid Grid.Row="1">
+  <Grid Grid.Row="1" IsEnabled="{Binding IsAvailable}">
    <Grid.ColumnDefinitions><ColumnDefinition Width="2*"/><ColumnDefinition Width="20"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
    <DataGrid x:Name="OludDataGrid" ItemsSource="{Binding Data}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
     AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" SelectionMode="Single" SelectionUnit="FullRow">
@@ -21,9 +21,9 @@
     <TextBlock Text="ID"/><TextBox Text="{Binding SelectedItem.Id, Mode=OneWay}" IsReadOnly="True" Margin="0,5,0,14" Padding="6"/>
     <TextBlock Text="Nimi"/><TextBox Text="{Binding SelectedItem.Nimi, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" Margin="0,5,0,14" Padding="6"/>
     <TextBlock Text="Tüüp"/><TextBox Text="{Binding SelectedItem.Tuup, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" Margin="0,5,0,14" Padding="6"/>
-    <TextBlock Text="Alkohol (%)"/><TextBox Text="{Binding SelectedItem.Alkoholiprotsent, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" Margin="0,5,0,14" Padding="6"/>
+    <TextBlock Text="Alkohol (%)"/><TextBox x:Name="AlcoholInput" Text="{Binding SelectedItem.Alkoholiprotsent, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" Margin="0,5,0,14" Padding="6"/>
     <TextBlock Text="Kirjeldus"/><TextBox Text="{Binding SelectedItem.Kirjeldus, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" Height="140" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,5,0,14" Padding="6"/>
-    <UniformGrid Columns="3"><Button Content="Lisa uus" Margin="0,0,5,0" Padding="5,9"/><Button Content="Salvesta" Margin="0,0,5,0" Padding="5,9"/><Button Content="Kustuta" Padding="5,9"/></UniformGrid>
+    <UniformGrid Columns="3"><Button Content="Lisa uus" Command="{Binding AddNewCommand}" Margin="0,0,5,0" Padding="5,9"/><Button Content="Salvesta" Command="{Binding SaveCommand}" CommandParameter="{Binding SelectedItem}" Margin="0,0,5,0" Padding="5,9"><Button.Style><Style TargetType="Button"><Style.Triggers><DataTrigger Binding="{Binding ElementName=AlcoholInput, Path=(Validation.HasError)}" Value="True"><Setter Property="IsEnabled" Value="False"/></DataTrigger></Style.Triggers></Style></Button.Style></Button><Button Content="Kustuta" Command="{Binding DeleteCommand}" CommandParameter="{Binding SelectedItem}" Padding="5,9"/></UniformGrid>
    </StackPanel>
   </Grid>
  </Grid>
