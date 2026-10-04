@@ -32,6 +32,8 @@ namespace KooliProjekt.WebAPI
             builder.Services.AddScoped<IPruulimisLogiRepository, PruulimisLogiRepository>();
             builder.Services.AddScoped<IPartiiFotoRepository, PartiiFotoRepository>();
 
+            builder.Services.AddCors(options => options.AddPolicy("Blazor", policy =>
+                policy.WithOrigins("http://localhost:5186").AllowAnyHeader().AllowAnyMethod()));
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -56,6 +58,7 @@ namespace KooliProjekt.WebAPI
                 app.UseSwaggerUI();
             }
 
+            app.UseCors("Blazor");
             app.UseAuthorization();
 
 
