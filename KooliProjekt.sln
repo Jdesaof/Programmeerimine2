@@ -16,12 +16,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KooliProjekt.WindowsForms.U
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KooliProjekt.WpfApplication", "KooliProjekt.WpfApplication\KooliProjekt.WpfApplication.csproj", "{A048EF10-4C61-47A6-B808-620BAE687508}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KooliProjekt.WpfApplication.UnitTests", "KooliProjekt.WpfApplication.UnitTests\KooliProjekt.WpfApplication.UnitTests.csproj", "{C4AB9085-289B-46F4-9463-25476A612B18}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C4AB9085-289B-46F4-9463-25476A612B18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4AB9085-289B-46F4-9463-25476A612B18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4AB9085-289B-46F4-9463-25476A612B18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4AB9085-289B-46F4-9463-25476A612B18}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A048EF10-4C61-47A6-B808-620BAE687508}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A048EF10-4C61-47A6-B808-620BAE687508}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A048EF10-4C61-47A6-B808-620BAE687508}.Release|Any CPU.ActiveCfg = Release|Any CPU
