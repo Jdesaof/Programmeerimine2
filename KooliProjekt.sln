@@ -20,12 +20,30 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KooliProjekt.WpfApplication
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KooliProjekt.BlazorWasm", "KooliProjekt.BlazorWasm\KooliProjekt.BlazorWasm.csproj", "{D6D3B3C6-FAB7-4CE8-983D-241E8C81FB20}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PictureViewer", "Tutorials\PictureViewer\PictureViewer.csproj", "{96F79260-B3C5-4B7C-A42A-DBE63D3E17CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathQuiz", "Tutorials\MathQuiz\MathQuiz.csproj", "{B9E9C9BC-D796-41C1-ACAA-8BDF16B47CF5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatchingGame", "Tutorials\MatchingGame\MatchingGame.csproj", "{AEFD67B3-EC8C-48C4-8E2B-5A29D8C86E4F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AEFD67B3-EC8C-48C4-8E2B-5A29D8C86E4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEFD67B3-EC8C-48C4-8E2B-5A29D8C86E4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEFD67B3-EC8C-48C4-8E2B-5A29D8C86E4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEFD67B3-EC8C-48C4-8E2B-5A29D8C86E4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9E9C9BC-D796-41C1-ACAA-8BDF16B47CF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9E9C9BC-D796-41C1-ACAA-8BDF16B47CF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9E9C9BC-D796-41C1-ACAA-8BDF16B47CF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9E9C9BC-D796-41C1-ACAA-8BDF16B47CF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96F79260-B3C5-4B7C-A42A-DBE63D3E17CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96F79260-B3C5-4B7C-A42A-DBE63D3E17CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96F79260-B3C5-4B7C-A42A-DBE63D3E17CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96F79260-B3C5-4B7C-A42A-DBE63D3E17CA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D6D3B3C6-FAB7-4CE8-983D-241E8C81FB20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D6D3B3C6-FAB7-4CE8-983D-241E8C81FB20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6D3B3C6-FAB7-4CE8-983D-241E8C81FB20}.Release|Any CPU.ActiveCfg = Release|Any CPU
