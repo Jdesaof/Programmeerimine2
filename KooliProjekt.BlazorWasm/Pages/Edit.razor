@@ -1,0 +1,133 @@
+@page "/create"
+@page "/edit/{Id:int}"
+@inject KooliProjekt.BlazorWasm.Api.IApiClient ApiClient
+@inject NavigationManager Navigation
+@implements IDisposable
+
+<PageTitle>@Title</PageTitle>
+<h1>@Title</h1>
+@if (loading)
+{
+    <p role="status">Laadin…</p>
+}
+else if (loadError != null)
+{
+    <p class="alert alert-danger" role="alert">@loadError</p>
+    <button class="btn btn-primary" @onclick="OnParametersSetAsync">Proovi uuesti</button>
+    <a class="btn btn-secondary" href="/olud">Tagasi</a>
+}
+else if (context != null)
+{
+    <EditForm EditContext="context" OnSubmit="Save" @key="context">
+        <ValidationSummary />
+        <fieldset disabled="@saving">
+            <p>Id: @item.Id</p>
+            <div class="mb-3">
+                <label for="nimi" class="form-label">Nimi</label>
+                <InputText id="nimi" class="form-control" @bind-Value="item.Nimi" />
+                <ValidationMessage For="@(() => item.Nimi)" />
+            </div>
+            <div class="mb-3">
+                <label for="tuup" class="form-label">Tüüp</label>
+                <InputText id="tuup" class="form-control" @bind-Value="item.Tuup" />
+                <ValidationMessage For="@(() => item.Tuup)" />
+            </div>
+            <div class="mb-3">
+                <label for="alkohol" class="form-label">Alkohol (%)</label>
+                <InputNumber id="alkohol" class="form-control" step="0.01" @bind-Value="item.Alkoholiprotsent" />
+                <ValidationMessage For="@(() => item.Alkoholiprotsent)" />
+            </div>
+            <div class="mb-3">
+                <label for="kirjeldus" class="form-label">Kirjeldus</label>
+                <InputTextArea id="kirjeldus" class="form-control" @bind-Value="item.Kirjeldus" />
+                <ValidationMessage For="@(() => item.Kirjeldus)" />
+            </div>
+            <button type="submit" class="btn btn-primary">@(saving ? "Salvestan…" : "Salvesta")</button>
+            <button type="button" class="btn btn-secondary" @onclick="Back">Tagasi</button>
+        </fieldset>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int? Id { get; set; }
+    private string Title => Id.HasValue ? "Muuda õlut" : "Lisa õlu";
+    private Olu item;
+    private EditContext context;
+    private ValidationMessageStore messages;
+    private string loadError;
+    private bool loading, saving;
+    private CancellationTokenSource request;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        request?.Cancel();
+        request?.Dispose();
+        request = new CancellationTokenSource();
+        var token = request.Token;
+        loading = true;
+        saving = false;
+        loadError = null;
+        context = null;
+        try
+        {
+            var loaded = new Olu();
+            if (Id.HasValue)
+            {
+                var result = await ApiClient.Get(Id.Value, token);
+                if (token.IsCancellationRequested) return;
+                if (result.HasErrors)
+                {
+                    loadError = string.Join(" ", (result.Errors ?? new List<string>()).Concat(result.PropertyErrors?.Values ?? Enumerable.Empty<string>()));
+                    return;
+                }
+                loaded = result.Value;
+            }
+            item = loaded;
+            context = new EditContext(item);
+            messages = new ValidationMessageStore(context);
+        }
+        catch (OperationCanceledException) when (token.IsCancellationRequested) { }
+        catch (Exception) { if (!token.IsCancellationRequested) loadError = "Andmete laadimine ebaõnnestus."; }
+        finally { if (!token.IsCancellationRequested) loading = false; }
+    }
+
+    private async Task Save()
+    {
+        if (saving || loading) return;
+        var token = request.Token;
+        messages.Clear();
+        context.NotifyValidationStateChanged();
+        // InputNumberi teisendusviga peab takistama vana arvväärtuse saatmist.
+        // Ärireegleid kontrollib WebAPI; DataAnnotationsValidator pole vajalik.
+        if (context.GetValidationMessages().Any()) return;
+        saving = true;
+        try
+        {
+            var result = await ApiClient.Save(item, token);
+            if (token.IsCancellationRequested) return;
+            if (!result.HasErrors) { Back(); return; }
+            foreach (var error in result.Errors ?? new List<string>())
+                messages.Add(new FieldIdentifier(item, string.Empty), error);
+            foreach (var error in result.PropertyErrors ?? new Dictionary<string, string>())
+            {
+                var key = error.Key.Split('.').Last();
+                var property = typeof(Olu).GetProperties().FirstOrDefault(p => string.Equals(p.Name, key, StringComparison.OrdinalIgnoreCase));
+                messages.Add(new FieldIdentifier(item, property?.Name ?? string.Empty), error.Value);
+            }
+            context.NotifyValidationStateChanged();
+        }
+        catch (OperationCanceledException) when (token.IsCancellationRequested) { }
+        catch (Exception)
+        {
+            if (!token.IsCancellationRequested)
+            {
+                messages.Add(new FieldIdentifier(item, string.Empty), "Salvestamine ebaõnnestus. Proovi uuesti.");
+                context.NotifyValidationStateChanged();
+            }
+        }
+        finally { if (!token.IsCancellationRequested) saving = false; }
+    }
+
+    private void Back() => Navigation.NavigateTo("/olud");
+    public void Dispose() { request?.Cancel(); request?.Dispose(); }
+}

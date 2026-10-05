@@ -10,6 +10,13 @@ public sealed class ApiClient : IApiClient
     private readonly HttpClient client;
     public ApiClient(HttpClient client) { this.client = client ?? throw new ArgumentNullException(nameof(client)); }
 
+    public async Task<OperationResult<Olu>> Get(int id, CancellationToken token = default)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/Olud/{id}");
+        var result = await Send<OperationResult<Olu>>(request, token);
+        if (!result.HasErrors && result.Value == null) result.AddError("Kirjet ei leitud.");
+        return result;
+    }
     public async Task<OperationResult<PagedResult<Olu>>> List(int page, int pageSize, CancellationToken token = default)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, $"api/Olud?Page={page}&PageSize={pageSize}");

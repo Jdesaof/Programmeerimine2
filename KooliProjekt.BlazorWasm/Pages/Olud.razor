@@ -4,6 +4,7 @@
 
 <PageTitle>Õlud</PageTitle>
 <h1>Õlud</h1>
+<p><a class="btn btn-primary" href="/create">Lisa uus</a></p>
 @if (loading)
 {
     <p role="status">Laadin…</p>
@@ -20,11 +21,11 @@ else if (data != null)
     {
         <div class="table-responsive">
         <table class="table table-striped">
-            <thead><tr><th>Id</th><th>Nimi</th><th>Tüüp</th><th>Alkohol (%)</th><th>Kirjeldus</th></tr></thead>
+            <thead><tr><th>Id</th><th>Nimi</th><th>Tüüp</th><th>Alkohol (%)</th><th>Kirjeldus</th><th>Tegevused</th></tr></thead>
             <tbody>
             @foreach (var item in data.Results)
             {
-                <tr @key="item.Id"><td>@item.Id</td><td>@item.Nimi</td><td>@item.Tuup</td><td>@item.Alkoholiprotsent</td><td>@item.Kirjeldus</td></tr>
+                <tr @key="item.Id"><td>@item.Id</td><td>@item.Nimi</td><td>@item.Tuup</td><td>@item.Alkoholiprotsent</td><td>@item.Kirjeldus</td><td><a class="btn btn-success" href="/edit/@item.Id">Muuda</a></td></tr>
             }
             </tbody>
         </table>
